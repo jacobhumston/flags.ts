@@ -63,9 +63,8 @@ class FlagParser<T extends readonly Flag[]> {
     parse(args?: Array<string>): ParsedFlags<T> {
         const input = args ?? process.argv.slice(2);
         const result: Record<string, string | number | boolean | URL> = {};
-        
+
         for (const flag of this.flags) {
-            
         }
 
         return result as ParsedFlags<T>;
@@ -81,15 +80,5 @@ class FlagParser<T extends readonly Flag[]> {
         return message;
     }
 }
-
-const parser = new FlagParser([
-    { name: 'minifyBuild', type: 'boolean' },
-    { name: 'websiteURL', type: 'url', required: true },
-    { name: 'staticDir', type: 'string', description: 'Optional static directory for this content.' },
-    { name: 'prettyBuild', type: 'boolean' },
-    { name: 'port', type: 'number', required: true, short: ['p'] },
-] as const);
-
-console.log(parser.parse());
 
 export { Flag, FlagParser, FlagTypeValue, FlagTypes, FlagTypesMap, FlagValue, FlagValues, ParsedFlags };
