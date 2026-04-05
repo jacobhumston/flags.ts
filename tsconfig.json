@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext"],
+        "types": ["@types/node", "@types/bun"],
+        "module": "nodenext",
+        "strict": true,
+        "declaration": true,
+        "sourceMap": true,
+        "rootDir": "src/",
+        "outDir": "dist/"
+    },
+    "exclude": ["tools/", "dist/", "node_modules/", "docs/", "test.ts"]
+}

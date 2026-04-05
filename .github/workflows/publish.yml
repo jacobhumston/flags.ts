@@ -1,0 +1,83 @@
+name: Publish Package
+
+on:
+    workflow_dispatch:
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write
+            id-token: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Update NPM
+              run: bun install -g npm@latest
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Build package
+              run: bun run compile
+
+            - name: Publish to npm
+              id: npm-publish
+              run: |
+                  NODE_AUTH_TOKEN="" npm publish --provenance --access public
+
+            - name: Get package version
+              if: success()
+              id: package-version
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+            - name: Generate Release Notes
+              if: success()
+              id: release-notes
+              run: |
+                  PREV_TAG=$(git describe --abbrev=0 --tags 2>/dev/null || echo "")
+                  COMMITS=$(git log ${PREV_TAG:+$PREV_TAG..}HEAD --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H)) - %an" --no-merges)
+                  cat << EOF > release_notes.md
+                  ## Release ${{ steps.package-version.outputs.version }}
+
+                  Published to npm: https://www.npmjs.com/package/flags.ts/v/${{ steps.package-version.outputs.version }}
+
+                  ### Changes
+
+                  $COMMITS
+                  EOF
+
+                  echo "notes<<EOF" >> $GITHUB_OUTPUT
+                  cat release_notes.md >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
+
+            - name: Create GitHub Release
+              if: success()
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ steps.package-version.outputs.tag }}
+                  name: Release ${{ steps.package-version.outputs.tag }}
+                  body: ${{ steps.release-notes.outputs.notes }}
+
+    deploy-docs:
+        needs: publish
+        uses: ./.github/workflows/deploy-docs.yml
+        permissions:
+            contents: write

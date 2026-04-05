@@ -1,0 +1,56 @@
+name: Deploy Documentation
+
+on:
+    workflow_dispatch:
+    workflow_call:
+
+jobs:
+    deploy-docs:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout main branch
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+                  path: main
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              working-directory: ./main
+              run: bun install
+
+            - name: Generate documentation
+              working-directory: ./main
+              run: bun docs
+
+            - name: Checkout docs branch
+              uses: actions/checkout@v4
+              with:
+                  ref: docs
+                  path: docs
+
+            - name: Clear docs branch
+              working-directory: ./docs
+              run: |
+                  git rm -rf . || true
+                  git clean -fxd
+
+            - name: Copy documentation files
+              run: |
+                  cp -r main/docs/* docs/
+
+            - name: Commit and push changes
+              working-directory: ./docs
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add .
+                  git diff --quiet && git diff --staged --quiet || (git commit -m "Update documentation from main branch" && git push)
