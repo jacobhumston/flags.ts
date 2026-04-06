@@ -65,6 +65,68 @@
                     <p>A simple and easy to use TypeScript based package for creating and using command-line flags.</p>
                     <pre><code class="bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">flags.ts</span><br/><span class="hl-3"># bun install flags.ts</span><br/><span class="hl-3"># deno install npm:flags.ts</span>
 </code><button type="button">Copy</button></pre>
+
+                    <p>Docs: <a href="https://flags.lovely.sh">https://flags.lovely.sh</a>.</p>
+                    <h2 id="example" class="tsd-anchor-link">
+                        Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"
+                            ><svg viewBox="0 0 24 24" aria-hidden="true">
+                                <use href="assets/icons.svg#icon-anchor"></use></svg
+                        ></a>
+                    </h2>
+                    <pre><code class="bash"><span class="hl-0">bun</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">src/example.ts</span><span class="hl-1"> </span><span class="hl-4">-p</span><span class="hl-1"> </span><span class="hl-5">80</span><span class="hl-1"> </span><span class="hl-4">--name</span><span class="hl-1"> </span><span class="hl-2">&quot;example message&quot;</span>
+</code><button type="button">Copy</button></pre>
+
+                    <pre><code class="ts"><span class="hl-6">import</span><span class="hl-1"> { </span><span class="hl-7">FlagParser</span><span class="hl-1"> } </span><span class="hl-6">from</span><span class="hl-1"> </span><span class="hl-2">&#39;flags.ts&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-8">flagParser</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-0">FlagParser</span><span class="hl-1">([</span><br/><span class="hl-1">    { </span><span class="hl-7">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;port&#39;</span><span class="hl-1">, </span><span class="hl-7">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;number&#39;</span><span class="hl-1">, </span><span class="hl-7">short:</span><span class="hl-1"> [</span><span class="hl-2">&#39;p&#39;</span><span class="hl-1">], </span><span class="hl-7">required:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-7">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;url&#39;</span><span class="hl-1">, </span><span class="hl-7">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;url&#39;</span><span class="hl-1"> },</span><br/><span class="hl-1">    { </span><span class="hl-7">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;name&#39;</span><span class="hl-1">, </span><span class="hl-7">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1"> }</span><br/><span class="hl-1">] </span><span class="hl-6">as</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1">);</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-8">parsedFlags</span><span class="hl-1"> = </span><span class="hl-7">flagParser</span><span class="hl-1">.</span><span class="hl-0">parse</span><span class="hl-1">();</span><br/><span class="hl-7">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-7">parsedFlags</span><span class="hl-1">);</span><br/><br/><span class="hl-3">/*</span><br/><span class="hl-3">    Result:</span><br/><span class="hl-3">    {</span><br/><span class="hl-3">        port: 1,</span><br/><span class="hl-3">        url: undefined,</span><br/><span class="hl-3">        name: &quot;example name&quot;,</span><br/><span class="hl-3">    }</span><br/><span class="hl-3">*/</span>
+</code><button type="button">Copy</button></pre>
+
+                    <p>You can also pass your own args if needed.</p>
+                    <pre><code class="ts"><span class="hl-3">/* </span><br/><span class="hl-3">    Note: When an array is provided, the parser will not remove the first two </span><br/><span class="hl-3">    items of the array like it does when using the default `process.argv`.</span><br/><span class="hl-3">*/</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-8">parsedFlags</span><span class="hl-1"> = </span><span class="hl-7">flagParser</span><span class="hl-1">.</span><span class="hl-0">parse</span><span class="hl-1">([</span><span class="hl-2">&#39;--example&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;1&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;-m&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;&quot;hello&#39;</span><span class="hl-1">, </span><span class="hl-2">&#39;world&quot;&#39;</span><span class="hl-1">]);</span>
+</code><button type="button">Copy</button></pre>
+
+                    <h2 id="purpose-design" class="tsd-anchor-link">
+                        Purpose &amp; Design<a href="#purpose-design" aria-label="Permalink" class="tsd-anchor-icon"
+                            ><svg viewBox="0 0 24 24" aria-hidden="true">
+                                <use href="assets/icons.svg#icon-anchor"></use></svg
+                        ></a>
+                    </h2>
+                    <p>
+                        flags.ts is meant to be an extremely simple and easy to use library. The code behind it is
+                        pretty simple as well, which allows forks and modifications to be made rather easily.
+                    </p>
+                    <p>
+                        As of writing it supports <code>string</code>, <code>boolean</code>, <code>number</code>, and
+                        <code>url</code>. All you need is a name and a type; descriptions and etc are optional.
+                    </p>
+                    <p>
+                        The way flags are written with this package are meant to be easily readable, however it includes
+                        support for aliases/short versions.
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Format</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>string</code></td>
+                                <td><code>--flag [string/&quot;spaced string&quot;]</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>boolean</code></td>
+                                <td><code>--flag &lt;false/off/no&gt;</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>number</code></td>
+                                <td><code>--flag [number]</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>url</code></td>
+                                <td><code>--flag [url]</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="col-sidebar">
@@ -186,6 +248,16 @@
                         </summary>
                         <div class="tsd-accordion-details">
                             <a href="#flagts"><span>flag.ts</span></a>
+                            <ul>
+                                <li>
+                                    <a href="#example"><span>Example</span></a>
+                                </li>
+                                <li>
+                                    <a href="#purpose-design"
+                                        ><span>Purpose &amp; <wbr />Design</span></a
+                                    >
+                                </li>
+                            </ul>
                         </div>
                     </details>
                 </div>
