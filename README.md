@@ -8,7 +8,7 @@ npm install flags.ts
 # deno install npm:flags.ts
 ```
 
-Docs: [https://flags.lovely.sh](https://flags.lovely.sh);
+Docs: [https://flags.lovely.sh](https://flags.lovely.sh).
 
 ## Example
 
@@ -38,6 +38,16 @@ console.log(parsedFlags);
 */
 ```
 
+You can also pass your own args if needed.
+
+```ts
+/* 
+    Note: When an array is provided, the parser will not remove the first two 
+    items of the array like it does when using the default `process.argv`.
+*/
+const parsedFlags = flagParser.parse(['--example', '1', '-m', '"hello', 'world"']);
+```
+
 ## Purpose & Design
 
 flags.ts is meant to be an extremely simple and easy to use library. The code behind it is pretty simple as well, which allows forks and modifications to be made rather easily.
@@ -51,4 +61,4 @@ The way flags are written with this package are meant to be easily readable, how
 | `string`  | `--flag [string/"spaced string"]` |
 | `boolean` | `--flag <false/off/no>`           |
 | `number`  | `--flag [number]`                 |
-| `url`     | `--flag https://example.com`      |
+| `url`     | `--flag [url]`                    |
