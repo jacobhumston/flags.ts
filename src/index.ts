@@ -62,9 +62,68 @@ class FlagParser<T extends readonly Flag[]> {
      */
     parse(args?: Array<string>): ParsedFlags<T> {
         const input = args ?? process.argv.slice(2);
-        const result: Record<string, string | number | boolean | URL> = {};
+        const result: Record<string, FlagValues | undefined> = {};
 
         for (const flag of this.flags) {
+            const index = [...(flag.short ?? []).map((s) => `-${s}`), `--${flag.name}`]
+                .map((f) => input.findIndex((a) => a === f))
+                .filter((i) => i > -1)[0];
+
+            if (index === undefined) {
+                if (flag.required) {
+                    throw new Error(
+                        `The flag --${flag.name} ${flag.type === 'boolean' ? '<boolean>' : `[${flag.type}]`} is required but it was not provided.`
+                    );
+                }
+
+                result[flag.name] = undefined;
+                continue;
+            }
+
+            const value =
+                flag.type === 'string'
+                    ? (() => {
+                          let str = input[index + 1];
+                          if (str.startsWith('"')) {
+                              const lastIndex = input.slice(index + 1).findIndex((s) => s.endsWith('"'));
+                              if (lastIndex !== -1) {
+                                  input.forEach((v, i) => {
+                                      if (i < i + 1 || i > i + 1) return;
+                                      str = `${str} ${v}`;
+                                  });
+                              }
+                          }
+                          return str;
+                      })()
+                    : input[index + 1];
+
+            if (flag.type !== 'boolean' && (!value || value.startsWith('-')))
+                throw new Error(`The flag --${flag.name} expected a ${flag.type} but didn't receive one.`);
+
+            let parsedValue: FlagValues | undefined;
+            switch (flag.type) {
+                case 'boolean':
+                    if (value === 'false' || value === 'no' || value === 'off') parsedValue = false;
+                    else parsedValue = true;
+                    break;
+                case 'number':
+                    parsedValue = Number(value);
+                    if (isNaN(parsedValue))
+                        throw new Error(`The flag --${flag.name} expected a valid number but received NaN.`);
+                    break;
+                case 'string':
+                    parsedValue = value;
+                    break;
+                case 'url':
+                    try {
+                        parsedValue = new URL(value);
+                    } catch {
+                        throw new Error(`The flag --${flag.name} expected a valid URL.`);
+                    }
+                    break;
+            }
+
+            result[flag.name] = parsedValue;
         }
 
         return result as ParsedFlags<T>;

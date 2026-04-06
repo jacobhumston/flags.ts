@@ -1,6 +1,6 @@
 {
     "name": "flags.ts",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A simple and easy to use TypeScript based package for creating and using command-line flags.",
     "keywords": [
         "args",
