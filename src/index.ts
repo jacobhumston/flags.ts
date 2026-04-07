@@ -85,12 +85,14 @@ class FlagParser<T extends readonly Flag[]> {
                     ? (() => {
                           let str = input[index + 1];
                           if (str.startsWith('"')) {
-                              const lastIndex = input.slice(index + 1).findIndex((s) => s.endsWith('"'));
+                              const section = input.slice(index + 2);
+                              const lastIndex = section.findIndex((s) => s.endsWith('"'));
                               if (lastIndex !== -1) {
-                                  input.forEach((v, i) => {
-                                      if (i < i + 1 || i > i + 1) return;
+                                  section.forEach((v, i) => {
+                                      if (i > lastIndex) return;
                                       str = `${str} ${v}`;
                                   });
+                                  str = str.slice(1, -1);
                               }
                           }
                           return str;
